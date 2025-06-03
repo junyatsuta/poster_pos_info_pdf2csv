@@ -28,19 +28,15 @@ for key in keys:
     df[key] = None
 
 for pdf_df in pdf_dfs[1:]:
-    for pos_word in pos_words:
-        if pos_word not in pdf_df.columns:
-            print(f"Warning: '{pos_word}' not found in the PDF data.")
-            continue
     found_pos_word = None
     for pos_word in pos_words:
         if pos_word in pdf_df.columns:
             found_pos_word = pos_word
             break
+    if found_pos_word is None:
+        print("Error: No position word found in the PDF.")
+        sys.exit(1)
     
-    for exp_word in exp_words:
-        if exp_word not in pdf_df.columns:
-            continue
     found_exp_word = None
     for exp_word in exp_words:
         if exp_word in pdf_df.columns:

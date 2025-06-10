@@ -3,3 +3,9 @@ tabula-py
 jpype1
 requests
 folium
+pdf2image
+pytesseract
+pillow
+opencv-python
+opencv-contrib-python
+scikit-image

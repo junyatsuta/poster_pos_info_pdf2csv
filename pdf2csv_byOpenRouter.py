@@ -55,7 +55,7 @@ for i, image in enumerate(images):
         messages=[
             {
             "role": "user",
-            "content": [{"type": "text", "text": "この画像から住所を重複を許して抽出し、説明を加えてリスト化し、「住所」と「説明」をkeyとしたjson形式で出力してください。日本語が文字化けしないように気を付けてください。"},  # ここに質問を書く
+            "content": [{"type": "text", "text": "この画像から住所を重複を許して抽出し、またその説明があれば加えてリスト化し、「住所」と「説明」をkeyとしたjson形式で出力してください。日本語が文字化けしないように気を付けてください。"},  # ここに質問を書く
                         {"type": "image_url", "image_url":{"url": f"data:image/jpeg;base64,{base64_image}"}},
                 ]
             }
@@ -70,7 +70,11 @@ for i, image in enumerate(images):
     end = texts.rfind(']')
     if start != -1 and end != -1 and end > start:
         texts = texts[start:end+1]
-    pos_dir_list = json.loads(texts)
+    try:
+        pos_dir_list = json.loads(texts)
+    except json.JSONDecodeError as e:
+        print(f"warning: JSON decode error on page {i+1}: {e}")
+        continue
     for pos_dir in pos_dir_list:
         address = pos_dir.get("住所", "")
         if len(address) < 3: # 数字を送るとresponseが返ってくるため
@@ -92,5 +96,10 @@ for i, image in enumerate(images):
             new_row["緯度"] = lat
             new_row["経度"] = lng
             new_row["説明"] = pos_dir.get("説明", "")
-            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        else:
+            new_row["場所"] = address
+            new_row["緯度"] = None
+            new_row["経度"] = None
+            new_row["説明"] = pos_dir.get("説明", "") + " (位置情報が見つかりませんでした)"
+        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 df.to_csv(output_csv, index=False)

@@ -51,6 +51,7 @@ $ python pdf2csv_byOpenRouter.py itiran.pdf itiran.csv
 ...
 ```
 
+現在、`pdf_samples`下にあるPDFは全て住所を正しく読み取れていると確認済み。
 
 
 
